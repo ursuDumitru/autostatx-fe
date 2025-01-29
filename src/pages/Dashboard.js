@@ -5,36 +5,34 @@ import CardContainer from '../components/CardContainer';
 import ServiceSelector from '../components/ServiceSelector';
 import DateTimeSelector from '../components/DateTimeSelector';
 import Button from '../components/Button';
+import ExcelDataTable from '../components/ExcelDataTable';
 import theme from '../config/config';
 import handleSearchButton from '../helpers/handleSearchButton';
-import axios from 'axios';
 
 function Dashboard() {
     const [showCardList, setShowCardList] = useState(false);
-    // const [reports, setReports] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
 
     // State to manage selected date, start time, and end time
-    const [selectedDate, setSelectedDate] = useState(null);
+    const [selectedStartDate, setSelectedStartDate] = useState(null);
+    const [selectedEndDate, setSelectedEndDate] = useState(null);
     const [startTime, setStartTime] = useState(null);
     const [endTime, setEndTime] = useState(null);
     const [selectedService, setSelectedService] = useState('');
     const [services, setServices] = useState([]);
-    const [dataFromExcel, setDataFromExcel] = useState([]);
-    // const [image, setImage] = useState(null);
+    const [excelData, setExcelData] = useState([]);
 
     const handleClick = async () => {
         handleSearchButton(
             selectedService,
-            selectedDate,
+            selectedStartDate,
+            selectedEndDate,
             startTime,
             endTime,
             setShowCardList,
             setErrorMessage,
-            setDataFromExcel
+            setExcelData
         );
-
-        // setImage();
 
         console.log('Services:', services);
     };
@@ -42,7 +40,6 @@ function Dashboard() {
     const downloadFile = (downloadUrl) => {
         const link = document.createElement('a');
         link.href = downloadUrl;
-        // link.download = downloadUrl.split('/').pop(); // Optional: Set the download filename from the URL
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -56,31 +53,38 @@ function Dashboard() {
                 style={{ backgroundColor: '#F9FAFB', height: '100vh' }}
             >
                 {/* Service and Time Selection */}
-                <CardListContainer>
-                    {/* ServiceSelector Card */}
-                    <CardContainer width={300}>
-                        <ServiceSelector label="Select a Service" selectedService={selectedService} setSelectedService={setSelectedService} setErrorMessage={setErrorMessage} setServices={setServices} services={services} />
-                    </CardContainer>
+                <div>
+                    <CardListContainer>
+                        {/* ServiceSelector Card */}
+                        <CardContainer width={200}>
+                            <ServiceSelector label="Selecteaza Service-ul" selectedService={selectedService} setSelectedService={setSelectedService} setErrorMessage={setErrorMessage} setServices={setServices} services={services} />
+                        </CardContainer>
 
-                    {/* DateTimeSelector Card */}
-                    <CardContainer width={400}>
-                        <DateTimeSelector
-                            selectedDate={selectedDate}
-                            setSelectedDate={setSelectedDate}
-                            startTime={startTime}
-                            setStartTime={setStartTime}
-                            endTime={endTime}
-                            setEndTime={setEndTime}
-                        />
-                    </CardContainer>
-                </CardListContainer>
+                        {/* DateTimeSelector Card */}
+                        <CardContainer width={800}>
+                            <DateTimeSelector
+                                selectedStartDate={selectedStartDate}
+                                setSelectedStartDate={setSelectedStartDate}
+                                selectedEndDate={selectedEndDate}
+                                setSelectedEndDate={setSelectedEndDate}
+                                startTime={startTime}
+                                setStartTime={setStartTime}
+                                endTime={endTime}
+                                setEndTime={setEndTime}
+                            />
+                        </CardContainer>
+                    </CardListContainer>
 
-                {/* Search Button */}
-                <Button
-                    color={theme.searchButtonColor}
-                    text={'Search'}
-                    onClick={handleClick}
-                />
+                    {/* Search Button */}
+                    <Button
+                        color={theme.searchButtonColor}
+                        hoverBackgorundColor={theme.hoverSearchButtonColor}
+                        text={'Genereaza Raport'}
+                        onClick={handleClick}
+                        width={'100%'}
+                        fontSize={'20px'}
+                    />
+                </div>
 
                 {/* Error message */}
                 {errorMessage && <CardListContainer>
@@ -91,7 +95,7 @@ function Dashboard() {
                 {showCardList && (
                     <>
                         {/* Existing CardListContainer for services */}
-                        <CardListContainer>
+                        <CardListContainer backgroundColor={'rgb(249, 250, 251)'} boxShadow={'none'} padding={'0'}>
                             {services.directories.length > 0 && (
                                 (() => {
                                     const selectedServiceData = services.directories.find(service => service.directory === selectedService);
@@ -100,10 +104,12 @@ function Dashboard() {
                                             return (
                                                 <Button
                                                     key={index}
-                                                    textColor={theme.generalColor}
-                                                    backgroundColor={'#FFFFFF'}
+                                                    textColor={theme.white}
+                                                    backgroundColor={theme.generalColor2}
+                                                    hoverBackgorundColor={theme.generalColor3}
                                                     text={file.name.split('.').slice(0, -1).join('.')} // Display name without extension
                                                     onClick={() => downloadFile(file.downloadUrl)} // Pass downloadUrl to the onClick handler
+                                                    margin={'0'}
                                                 />
                                             );
                                         });
@@ -114,21 +120,10 @@ function Dashboard() {
                             )}
                         </CardListContainer>
 
-                        {/* New CardListContainer for dataFromExcel */}
-                        <div style={{ padding: '30px' }}>
-                            <CardListContainer>
-                                <CardContainer width={400}>
-                                    <h5 style={{ padding: '10px' }}>Analysis Results</h5>
-                                    <div className="mt-2">
-                                        <p><strong>Unique Vehicles:</strong> {dataFromExcel.uniqueVehicles}</p>
-                                        <p><strong>Average Time:</strong> {Math.round(dataFromExcel.averageTime)} minutes</p>
-                                    </div>
-                                    {/* <div className="mt-3">
-                                        <img src={axios.get('http://localhost:5000/api/getChartImage')} alt="Graph" />
-                                    </div> */}
-                                </CardContainer>
-                            </CardListContainer>
-                        </div>
+                        <CardListContainer >
+                            {/* A Table with data from the api */}
+                            <ExcelDataTable excelData={excelData}/>
+                        </CardListContainer>
                     </>
                 )}
             </div>

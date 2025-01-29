@@ -1,17 +1,17 @@
-import axios from 'axios';
+// import axios from 'axios';
 
 const handleSearchButton = async (
     selectedService,
-    selectedDate,
+    selectedStartDate,
+    selectedEndDate,
     startTime,
     endTime,
     setShowCardList,
-    // setReports,
     setErrorMessage,
-    setDataFromExcel
+    setExcelData
 ) => {
     // Validate the selected fields
-    if (!selectedService || !selectedDate || !startTime || !endTime) {
+    if (!selectedService || !selectedStartDate || !startTime || !endTime) {
         console.error('Please select all required fields.');
         setErrorMessage('Please select all required fields.');
         return;
@@ -19,37 +19,27 @@ const handleSearchButton = async (
 
     setErrorMessage('');
 
-    const formattedDate = selectedDate.toLocaleDateString('en-GB');
+    const formattedStartDate = selectedStartDate.toLocaleDateString('en-GB');
+    const formattedEndDate = selectedEndDate.toLocaleDateString('en-GB');
     const formattedStartTime = startTime.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false });
     const formattedEndTime = endTime.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false });
 
     console.log('Selected Service:', selectedService);
-    console.log('Selected Date:', formattedDate);
+    console.log('Selected Start Date:', formattedStartDate);
+    console.log('Selected End Date:', formattedEndDate);
     console.log('Start Time:', formattedStartTime);
     console.log('End Time:', formattedEndTime);
 
     // Show loading or card list
     setShowCardList(true);
 
-    // Fetch the reports
-    try {
-        const response = await axios.get('http://localhost:5000/api/analyzeVehicles', {
-            params: {
-                date: formattedDate,
-                startTime: formattedStartTime,
-                endTime: formattedEndTime,
-                service: selectedService,
-            },
-        });
-
-        setDataFromExcel(response.data);
-
-        console.log('Reports:', response.data);
-        // setReports(response.data);
-    } catch (error) {
-        console.error('Error fetching reports:', error);
-        setErrorMessage('Failed to fetch reports. Please try again.');
-    }
+    // Call the API to analyze the data
+    setExcelData([
+        ["Statistici Generale"], // Header row spanning two columns
+        ["Numar Unic de masini Detectate", "100"],
+        ["Numar de Masini Detectate de AutoStatX dar lipsa in CRM", "101"],
+        ["Timp mediu Service", "103 min"]
+    ]);
 };
 
 export default handleSearchButton;

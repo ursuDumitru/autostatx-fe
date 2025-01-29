@@ -7,7 +7,7 @@ function TopBar() {
     <div
       className="d-flex justify-content-between align-items-center px-5 py-3 text-white shadow"
       style={{
-        backgroundColor: theme.generalColor, // Use the global color
+        backgroundColor: theme.blueColor, // Use the global color
         height: '100px',
       }}
     >

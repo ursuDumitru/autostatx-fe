@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import theme from '../config/config'; // Import the global theme
 import getServices from '../helpers/getServices'; // Adjust the path as needed
 
 function ServiceSelector({ label, selectedService, setSelectedService, setErrorMessage, setServices, services }) {
@@ -20,7 +19,7 @@ function ServiceSelector({ label, selectedService, setSelectedService, setErrorM
                 style={{
                     fontWeight: 'bold',
                     fontSize: '16px',
-                    color: theme.generalColor,
+                    color: '#000',
                 }}
             >
                 {label}
@@ -42,11 +41,6 @@ function ServiceSelector({ label, selectedService, setSelectedService, setErrorM
                     <option>No services available</option>
                 )}
             </select>
-            {/* {selectedService && (
-        <div className="mt-3">
-          <p>You selected: <strong>{selectedService}</strong></p>
-        </div>
-      )} */}
         </div>
     );
 }
